@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>artcard</title>
+    <meta name="description" content="Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries." />
+    <meta name="author" content="ee" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content="artcard by ee" />
+    <meta property="og:description" content="Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="artcard" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="artcard by ee" />
+    <meta name="twitter:description" content="Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%96%BC%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "artcard",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "inLanguage": "en",
+        "description": "Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries.",
+        "creator": {
+          "@type": "Person",
+          "name": "ee",
+          "url": "https://www.instagram.com/emilyedwards"
+        },
+        "provider": {
+          "@type": "Organization",
+          "name": "Whitney Museum of American Art",
+          "url": "https://whitney.org"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="app" class="app">
+      <section id="landing" class="landing" aria-labelledby="landing-title">
+        <div id="landingThumbnails" class="landing-thumbnails" aria-hidden="true"></div>
+        <div class="landing__inner">
+          <h1 id="landing-title">artcard</h1>
+          <p>Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries.</p>
+          <button id="startButton" class="button button--primary" type="button">START QUIZ</button>
+        </div>
+        <footer class="footer landing__footer">
+          <a href="https://whitney.org" target="_blank" rel="noreferrer">
+            artwork courtesy of Whitney Museum of American Art
+          </a>
+          <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+        </footer>
+      </section>
+
+      <section id="experience" class="experience is-hidden" aria-live="polite">
+        <header class="topbar">
+          <a class="wordmark" href="./" aria-label="artcard home">artcard</a>
+          <p id="artworkCount">Artwork 1 of ∞</p>
+        </header>
+
+        <div id="loadingState" class="loading-state">
+          <p>one moment, pulling work from the collection.</p>
+        </div>
+
+        <article id="card" class="study is-hidden">
+          <section class="art-panel" aria-label="Artwork">
+            <button id="artworkZoomButton" class="art-frame" type="button" aria-label="View artwork larger">
+              <img id="artworkImage" alt="" />
+            </button>
+          </section>
+
+          <section class="question-panel" aria-labelledby="questionText">
+            <h2 id="questionText">What is the title of this piece?</h2>
+            <div id="answerList" class="answers" aria-label="Answer choices"></div>
+          </section>
+        </article>
+
+        <footer class="footer">
+          <a href="https://whitney.org" target="_blank" rel="noreferrer">
+            artwork courtesy of Whitney Museum of American Art
+          </a>
+          <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+        </footer>
+      </section>
+
+      <dialog id="feedbackDialog" class="modal" aria-labelledby="modalTitle">
+        <div class="modal__body">
+          <h2 id="modalTitle">correct!</h2>
+          <div id="modalDetails" class="modal__details is-hidden">
+            <dl>
+              <div>
+                <dt>Title</dt>
+                <dd id="revealTitle"></dd>
+              </div>
+              <div>
+                <dt>Artist</dt>
+                <dd id="revealArtist"></dd>
+              </div>
+              <div>
+                <dt>Year</dt>
+                <dd id="revealYear"></dd>
+              </div>
+              <div>
+                <dt>Medium</dt>
+                <dd id="revealMedium"></dd>
+              </div>
+            </dl>
+            <p id="revealObservation"></p>
+            <a id="whitneyLink" class="modal__link" target="_blank" rel="noreferrer">View on Whitney</a>
+          </div>
+          <p id="progressText" class="modal__progress is-hidden"></p>
+          <button id="modalButton" class="button button--primary" type="button">NEXT PIECE</button>
+        </div>
+      </dialog>
+
+      <dialog id="artworkDialog" class="artwork-modal" aria-label="Artwork enlarged view">
+        <button id="artworkCloseButton" class="artwork-modal__close" type="button">CLOSE</button>
+        <img id="artworkLargeImage" alt="" />
+      </dialog>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
