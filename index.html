@@ -17,6 +17,17 @@
     <meta name="twitter:description" content="Test your art history knowledge through works by some of the most influential artists of the twentieth and twenty-first centuries." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='50' font-size='48'%3E%F0%9F%96%BC%EF%B8%8F%3C/text%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KR9LSEDC2E"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-KR9LSEDC2E");
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -51,9 +62,12 @@
         </div>
         <footer class="footer landing__footer">
           <a href="https://whitney.org" target="_blank" rel="noreferrer">
-            artwork courtesy of Whitney Museum of American Art
+            Powered by the Whitney Museum of American Art API
           </a>
-          <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+          <span class="footer__links">
+            <a href="/info" data-info-link>info</a>
+            <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+          </span>
         </footer>
       </section>
 
@@ -82,15 +96,18 @@
 
         <footer class="footer">
           <a href="https://whitney.org" target="_blank" rel="noreferrer">
-            artwork courtesy of Whitney Museum of American Art
+            Powered by the Whitney Museum of American Art API
           </a>
-          <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+          <span class="footer__links">
+            <a href="/info" data-info-link>info</a>
+            <a href="https://www.instagram.com/emilyedwards" target="_blank" rel="noreferrer">by ee</a>
+          </span>
         </footer>
       </section>
 
       <dialog id="feedbackDialog" class="modal" aria-labelledby="modalTitle">
         <div class="modal__body">
-          <h2 id="modalTitle">correct!</h2>
+          <h2 id="modalTitle">Correct!</h2>
           <div id="modalDetails" class="modal__details is-hidden">
             <dl>
               <div>
@@ -111,7 +128,7 @@
               </div>
             </dl>
             <p id="revealObservation"></p>
-            <a id="whitneyLink" class="modal__link" target="_blank" rel="noreferrer">View on Whitney</a>
+            <a id="whitneyLink" class="modal__link" target="_blank" rel="noreferrer">View on Whitney.org</a>
           </div>
           <p id="progressText" class="modal__progress is-hidden"></p>
           <button id="modalButton" class="button button--primary" type="button">NEXT PIECE</button>
@@ -122,9 +139,22 @@
         <button id="artworkCloseButton" class="artwork-modal__close" type="button">CLOSE</button>
         <img id="artworkLargeImage" alt="" />
       </dialog>
+
+      <dialog id="infoDialog" class="modal info-modal" aria-labelledby="infoTitle">
+        <div class="modal__body">
+          <h2 id="infoTitle">Welcome</h2>
+          <p>
+            Artcard is an independent art history quiz built using the Whitney Museum of American Art's
+            <a href="https://whitney.org/about/website/api" target="_blank" rel="noreferrer">public API</a>.
+            Made by <a href="https://emilyedwards.xyz/" target="_blank" rel="noreferrer">Emily Edwards</a>.
+          </p>
+          <button id="infoCloseButton" class="button button--primary" type="button">CLOSE</button>
+        </div>
+      </dialog>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js" type="module"></script>
   </body>
 </html>
+
