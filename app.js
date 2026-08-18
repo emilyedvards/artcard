@@ -8,6 +8,14 @@ const PROGRESS_MILESTONES = new Set([5, 10, 20, 30, 40, 50, 60, 70, 80, 100]);
 const SUPABASE_URL = "https://pubopvzjtfvwceaqmqbf.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TGHJIM6p7LTf88d8HyEsbQ_VSla6Rdj";
 const supabaseClient = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const CORRECT_MODAL_TITLES = [
+  "Correct!",
+  "Wow!",
+  "Good job!",
+  "Nice work!",
+  "Yes! Keep going!",
+  "That's right!",
+];
 
 const fallbackArtworks = [
   {
@@ -207,6 +215,7 @@ const state = {
   firstTryCorrect: 0,
   pendingProgressReport: false,
   modalMode: "",
+  correctModalTitleQueue: [],
   questionHistory: [],
   recentAnswerValues: {},
   revealTimer: null,
@@ -231,7 +240,10 @@ const elements = {
   answerList: document.querySelector("#answerList"),
   feedbackDialog: document.querySelector("#feedbackDialog"),
   artworkDialog: document.querySelector("#artworkDialog"),
+  infoDialog: document.querySelector("#infoDialog"),
+  infoLinks: document.querySelectorAll("[data-info-link]"),
   artworkCloseButton: document.querySelector("#artworkCloseButton"),
+  infoCloseButton: document.querySelector("#infoCloseButton"),
   modalTitle: document.querySelector("#modalTitle"),
   modalDetails: document.querySelector("#modalDetails"),
   progressText: document.querySelector("#progressText"),
@@ -248,10 +260,15 @@ elements.startButton.addEventListener("click", startExperience);
 elements.modalButton.addEventListener("click", handleModalButton);
 elements.artworkZoomButton.addEventListener("click", showArtworkModal);
 elements.artworkCloseButton.addEventListener("click", closeArtworkModal);
+elements.infoCloseButton.addEventListener("click", closeInfoModal);
+elements.infoLinks.forEach((link) => link.addEventListener("click", handleInfoLinkClick));
 elements.feedbackDialog.addEventListener("close", handleAnyDialogClose);
 elements.artworkDialog.addEventListener("close", handleAnyDialogClose);
+elements.infoDialog.addEventListener("close", handleInfoDialogClose);
 elements.feedbackDialog.addEventListener("click", handleDialogBackdropClick);
 elements.artworkDialog.addEventListener("click", handleDialogBackdropClick);
+elements.infoDialog.addEventListener("click", handleDialogBackdropClick);
+window.addEventListener("popstate", syncInfoRoute);
 
 startLandingThumbnails();
 hydratePool({ timeoutMs: 0 }).then((didHydrate) => {
@@ -263,6 +280,8 @@ hydratePool({ timeoutMs: 0 }).then((didHydrate) => {
 if (new URLSearchParams(window.location.search).get("start") === "1") {
   startExperience();
 }
+
+syncInfoRoute();
 
 function landingThumbnailPlacements() {
   return [
@@ -650,21 +669,30 @@ function selectAnswer(answerId) {
 }
 
 function populateReveal(artwork) {
-  elements.revealTitle.textContent = artwork.title;
-  elements.revealArtist.textContent = artwork.artist;
-  elements.revealYear.textContent = artwork.date || "Date unknown";
-  elements.revealMedium.textContent = artwork.medium || artwork.classification || "Medium not listed";
+  elements.revealTitle.textContent = formatDisplayMetadata(artwork.title);
+  elements.revealArtist.textContent = formatDisplayMetadata(artwork.artist);
+  elements.revealYear.textContent = formatDisplayMetadata(artwork.date) || "Date unknown";
+  elements.revealMedium.textContent =
+    formatDisplayMetadata(artwork.medium || artwork.classification) || "Medium not listed";
   elements.revealObservation.textContent = artwork.observation;
   elements.whitneyLink.href = `https://whitney.org/collection/works/${artwork.id}`;
 }
 
 function showCorrectModal() {
   state.modalMode = "correct";
-  elements.modalTitle.textContent = "correct!";
+  elements.modalTitle.textContent = nextCorrectModalTitle();
   elements.modalDetails.classList.remove("is-hidden");
   elements.progressText.classList.add("is-hidden");
   elements.modalButton.textContent = "NEXT PIECE";
   openDialog();
+}
+
+function nextCorrectModalTitle() {
+  if (!state.correctModalTitleQueue.length) {
+    state.correctModalTitleQueue = shuffle(CORRECT_MODAL_TITLES);
+  }
+
+  return state.correctModalTitleQueue.pop();
 }
 
 function handleModalButton() {
@@ -782,18 +810,69 @@ function closeArtworkModal() {
   handleAnyDialogClose();
 }
 
+function handleInfoLinkClick(event) {
+  event.preventDefault();
+  openInfoModal({ updateHistory: true });
+}
+
+function openInfoModal({ updateHistory = false } = {}) {
+  if (updateHistory && window.location.pathname !== "/info") {
+    window.history.pushState({ infoOpen: true }, "", "/info");
+  }
+
+  if (!elements.infoDialog.open) {
+    document.body.classList.add("modal-open");
+    elements.infoDialog.showModal();
+  }
+}
+
+function closeInfoModal({ updateHistory = true } = {}) {
+  if (elements.infoDialog.open) {
+    elements.infoDialog.close();
+  }
+
+  if (updateHistory && window.location.pathname === "/info") {
+    window.history.pushState({}, "", "/");
+  }
+
+  handleAnyDialogClose();
+}
+
+function handleInfoDialogClose() {
+  if (window.location.pathname === "/info") {
+    window.history.pushState({}, "", "/");
+  }
+
+  handleAnyDialogClose();
+}
+
+function syncInfoRoute() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("info") === "1" && window.location.pathname !== "/info") {
+    window.history.replaceState({ infoOpen: true }, "", "/info");
+  }
+
+  if (window.location.pathname === "/info") {
+    openInfoModal();
+  } else if (elements.infoDialog.open) {
+    closeInfoModal({ updateHistory: false });
+  }
+}
+
 function handleDialogBackdropClick(event) {
   if (event.target !== event.currentTarget) return;
 
   if (event.currentTarget === elements.artworkDialog) {
     closeArtworkModal();
+  } else if (event.currentTarget === elements.infoDialog) {
+    closeInfoModal();
   } else {
     closeDialog();
   }
 }
 
 function handleAnyDialogClose() {
-  if (!elements.feedbackDialog.open && !elements.artworkDialog.open) {
+  if (!elements.feedbackDialog.open && !elements.artworkDialog.open && !elements.infoDialog.open) {
     document.body.classList.remove("modal-open");
   }
 }
@@ -889,3 +968,13 @@ function cleanText(value) {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+function formatDisplayMetadata(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,;:.!?])/g, "$1")
+    .replace(/;(?=\S)/g, "; ")
+    .replace(/,(?=\S)/g, ", ")
+    .trim();
+}
+
